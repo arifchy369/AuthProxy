@@ -1,0 +1,22 @@
+{
+  "name": "authproxy",
+  "version": "1.1.0",
+  "description": "Auth-protected HTTP + WebSocket reverse proxy with a login page, cookie sessions and optional backend command auto-start",
+  "main": "proxy.js",
+  "scripts": {
+    "start": "node proxy.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arifchy369/authproxy.git"
+  },
+  "author": "arifchy369",
+  "dependencies": {
+    "http-proxy": "^1.18.1"
+  },
+  "private": true,
+  "license": "MIT"
+}

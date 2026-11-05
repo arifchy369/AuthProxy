@@ -1,0 +1,19 @@
+{
+  "host": "127.0.0.1",
+  "port": 8080,
+  "backend": {
+    "host": "127.0.0.1",
+    "port": 8090,
+    "command": "",
+    "cwd": "/path/to/your/web-app",
+    "env": {},
+    "startTimeoutMs": 20000
+  },
+  "session": {
+    "hours": 12
+  },
+  "security": {
+    "maxFails": 5,
+    "blockMinutes": 15
+  }
+}

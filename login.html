@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
+<title>Sign in · AuthProxy</title>
+<style>
+  :root {
+    --bg: #e6ebef;
+    --bg-dot: #cfd7de;
+    --folder: #efcf7f;
+    --folder-edge: #d9b55c;
+    --folder-ink: #6b5214;
+    --sheet: #fffdf8;
+    --ink: #17212b;
+    --muted: #5d6b78;
+    --line: #cfd6dc;
+    --field: #ffffff;
+    --accent: #1f4e79;
+    --accent-hover: #173d60;
+    --on-accent: #ffffff;
+    --danger: #a3261c;
+    --danger-bg: #fbe9e6;
+    --shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 18px 40px -18px rgba(23,33,43,.35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151c26;
+      --bg-dot: #1f2937;
+      --folder: #c99a35;
+      --folder-edge: #a97f26;
+      --folder-ink: #3d2e08;
+      --sheet: #212a37;
+      --ink: #e8edf2;
+      --muted: #97a5b3;
+      --line: #364354;
+      --field: #1a222d;
+      --accent: #7fb2e5;
+      --accent-hover: #9cc4ee;
+      --on-accent: #0f1a26;
+      --danger: #ff9b90;
+      --danger-bg: #3a1f1d;
+      --shadow: 0 22px 44px -20px rgba(0,0,0,.7);
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    display: grid;
+    place-items: center;
+    padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--bg-dot) 1px, transparent 1px);
+    background-size: 22px 22px;
+    color: var(--ink);
+    font: 16px/1.5 ui-sans-serif, "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Folder */
+  .folder {
+    position: relative;
+    width: min(100%, 400px);
+    margin-top: 34px;
+    padding: 14px 14px 18px;
+    background: var(--folder);
+    border-radius: 4px 14px 14px 14px;
+    box-shadow: var(--shadow), 0 0 0 1px var(--folder-edge) inset;
+  }
+  .folder::before {            /* tab */
+    content: "";
+    position: absolute;
+    left: 0; top: -30px;
+    width: 148px; height: 32px;
+    background: var(--folder);
+    border-radius: 12px 12px 0 0;
+    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 100%, 0 100%);
+    box-shadow: 0 0 0 1px var(--folder-edge) inset;
+  }
+  .tab {
+    position: absolute;
+    left: 14px; top: -27px;
+    height: 27px;
+    display: flex; align-items: center; gap: 7px;
+    color: var(--folder-ink);
+    font-size: 13px; font-weight: 650; letter-spacing: .01em;
+  }
+  .tab svg { width: 15px; height: 15px; }
+
+  /* Paper sheet sliding out of the folder: the one animated moment */
+  .sheet {
+    background: var(--sheet);
+    border-radius: 8px;
+    padding: 30px 26px 26px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 0 0 1px var(--line);
+    animation: slide .55s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes slide {
+    from { transform: translateY(26px); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+  }
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 26px; line-height: 1.15;
+    font-weight: 700; letter-spacing: -.02em;
+  }
+  .lead { margin: 0 0 22px; color: var(--muted); font-size: 15px; }
+
+  .error {
+    margin: 0 0 18px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--danger-bg);
+    color: var(--danger);
+    font-size: 14px; font-weight: 550;
+  }
+
+  label { display: block; margin: 0 0 6px; font-size: 14px; font-weight: 600; }
+  .field { margin-bottom: 16px; }
+  .control { position: relative; }
+  input[type=text], input[type=password] {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--field);
+    color: var(--ink);
+    font: inherit;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input:hover { border-color: var(--muted); }
+  input:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .control input[type=password], .control input.revealed { padding-right: 46px; }
+  .toggle {
+    position: absolute; right: 4px; top: 4px;
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    border: 0; border-radius: 6px;
+    background: transparent; color: var(--muted);
+    cursor: pointer;
+  }
+  .toggle:hover { color: var(--ink); }
+  .toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+  .toggle svg { width: 20px; height: 20px; }
+  .toggle .off { display: none; }
+  .toggle[aria-pressed=true] .on { display: none; }
+  .toggle[aria-pressed=true] .off { display: block; }
+
+  button.submit {
+    width: 100%; height: 48px; margin-top: 6px;
+    border: 0; border-radius: 8px;
+    background: var(--accent); color: var(--on-accent);
+    font: inherit; font-weight: 650;
+    cursor: pointer;
+    transition: background .15s, transform .05s;
+  }
+  button.submit:hover { background: var(--accent-hover); }
+  button.submit:active { transform: translateY(1px); }
+  button.submit:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
+  button.submit[disabled] { opacity: .7; cursor: progress; }
+
+  .note { margin: 16px 0 0; text-align: center; color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 380px) {
+    .sheet { padding: 24px 18px 20px; }
+    h1 { font-size: 23px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sheet { animation: none; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <main class="folder">
+    <div class="tab" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+      AuthProxy
+    </div>
+
+    <form class="sheet" method="post" action="/__login" autocomplete="on">
+      <h1>Sign in</h1>
+      <p class="lead">Enter your details to continue.</p>
+
+      {{ERROR}}
+
+      <input type="hidden" name="next" value="{{NEXT}}">
+
+      <div class="field">
+        <label for="user">Username</label>
+        <input id="user" name="username" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required autofocus>
+      </div>
+
+      <div class="field">
+        <label for="pass">Password</label>
+        <div class="control">
+          <input id="pass" name="password" type="password" autocomplete="current-password" required>
+          <button class="toggle" type="button" aria-label="Show password" aria-pressed="false">
+            <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.5 6.6C3.9 8.3 2 12 2 12s3.6 7 10 7c1.7 0 3.2-.4 4.5-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="submit" type="submit">Sign in</button>
+      <p class="note">Signed out automatically after {{SESSION_HOURS}} hours.</p>
+    </form>
+  </main>
+
+<script>
+  (function () {
+    var pass = document.getElementById('pass');
+    var btn = document.querySelector('.toggle');
+    btn.addEventListener('click', function () {
+      var show = pass.type === 'password';
+      pass.type = show ? 'text' : 'password';
+      pass.classList.toggle('revealed', show);
+      btn.setAttribute('aria-pressed', String(show));
+      btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      pass.focus();
+    });
+    document.querySelector('form').addEventListener('submit', function () {
+      var s = document.querySelector('.submit');
+      s.disabled = true;
+      s.textContent = 'Signing in…';
+    });
+    // Back/forward cache: re-enable the button
+    window.addEventListener('pageshow', function () {
+      var s = document.querySelector('.submit');
+      s.disabled = false;
+      s.textContent = 'Sign in';
+    });
+  })();
+</script>
+</body>
+</html>
